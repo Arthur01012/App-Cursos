@@ -55,4 +55,5 @@ dependencies {
 
     // Kotlin Serialization: una sola versión
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }
