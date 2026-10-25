@@ -1,5 +1,7 @@
 package com.example.app_cursos.Presentador
 
+import com.example.app_cursos.Modelo.clsCursosModelo
+
 import com.example.app_cursos.Modelo.clsCarrerasModelo
 import com.example.app_cursos.Modelo.dataCarrera
 import com.example.app_cursos.Vista.MainActivity
@@ -10,6 +12,7 @@ import kotlinx.coroutines.launch
 class clsPresentadorCarrera(val vista: MainActivity)  {
 
     private val modelo = clsCarrerasModelo()
+    private val modeloCursos = clsCursosModelo()
     private var listaCarreras: List<dataCarrera> = emptyList()
 
     fun iniciar()
@@ -22,6 +25,8 @@ class clsPresentadorCarrera(val vista: MainActivity)  {
                 listaCarreras = modelo.obtenerCarreras()
                 vista.mostrarCarreras(listaCarreras)
 
+                cargarCursos(0)
+
             }catch (e: Exception)
             {
                 vista.mostrarError("Error:"+e.localizedMessage)
@@ -33,8 +38,17 @@ class clsPresentadorCarrera(val vista: MainActivity)  {
         if(position >= 0 && position < listaCarreras.size)
         {
             val carrera = listaCarreras[position]
-            //Si la categoria.id es 0, la API trae todos; si es >0 filtrará por esa categoria
-
+            cargarCursos(carrera.idCarrera)
+        }
+    }
+    private fun cargarCursos(idCarrera: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val cursos = modeloCursos.obtenerCursos(idCarrera)
+                vista.mostrarCursos(cursos)
+            } catch (e: Exception) {
+                vista.mostrarError("Error al cargar cursos: " + e.localizedMessage)
+            }
         }
     }
 

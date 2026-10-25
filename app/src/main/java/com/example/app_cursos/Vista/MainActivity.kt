@@ -12,7 +12,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app_cursos.Adaptador.CursosAdaptador
 import com.example.app_cursos.Modelo.dataCarrera
+import com.example.app_cursos.Modelo.dataCursos
 import com.example.app_cursos.Presentador.clsPresentadorCarrera
 import com.example.app_cursos.R
 
@@ -20,7 +22,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var presenter: clsPresentadorCarrera
     private lateinit var spinner : Spinner
-    private lateinit var recyclerCarrera : RecyclerView
+    private lateinit var recyclerCursos : RecyclerView
+    private lateinit var adapterCursos: CursosAdaptador
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +36,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         spinner = findViewById(R.id.spnCarreras)
-        recyclerCarrera=findViewById(R.id.rvLista)
+        recyclerCursos=findViewById(R.id.rvLista)
 
-        recyclerCarrera.layoutManager = GridLayoutManager (this,2)
+        recyclerCursos.layoutManager = GridLayoutManager (this,2)
+        adapterCursos = CursosAdaptador(emptyList())
         presenter = clsPresentadorCarrera(this)
+        recyclerCursos.adapter = adapterCursos
 
         configurarListeners()
         presenter.iniciar()
@@ -61,6 +66,9 @@ class MainActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item,carrera)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
+    }
+    fun mostrarCursos(cursos: List<dataCursos>) {
+        adapterCursos.actualizarLista(cursos)
     }
     fun mostrarMensajeExito(id:Int, nombre:String)
     {
