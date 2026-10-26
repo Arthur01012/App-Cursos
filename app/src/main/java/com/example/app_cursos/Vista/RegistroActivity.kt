@@ -18,4 +18,24 @@ class RegistroActivity : AppCompatActivity() {
             insets
         }
     }
+    private fun mostrarSelectorDeFecha(campoFecha: EditText) {
+        val calendario = Calendar.getInstance()
+        val anioActual = calendario.get(Calendar.YEAR)
+        val mesActual = calendario.get(Calendar.MONTH)
+        val diaActual = calendario.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                // Aplica el formato exacto que espera tu base de datos MariaDB (YYYY-MM-DD)
+                val fechaFormateada = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+                campoFecha.setText(fechaFormateada)
+            },
+            anioActual,
+            mesActual,
+            diaActual
+        )
+
+        datePickerDialog.show()
+    }
 }
