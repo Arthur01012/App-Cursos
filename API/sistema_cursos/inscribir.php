@@ -22,9 +22,28 @@ if (empty($codigoCurso) || empty($matricula) || empty($correo) || empty($fechaRe
     exit;
 }
 try {
-    //code...
-} catch (\Throwable $th) {
-    //throw $th;
+    //verificar que el codigo del curso que se obtuvo se encuentre en la base de datos
+    $consultaCurso = $pdo->prepare(
+        "SELECT codigo_curso FROM tbl_curso WHERE codigo_curso = ?"
+    );
+    $consultaCurso->execute([$codigoCurso]);
+    //en caso de que no, se envia un error
+    if (!$consultaCurso->fetch()) {
+        http_response_code(404);
+        echo json_encode([
+            "exito" => false,
+            "mensaje" => "El curso indicado no existe."
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+} catch (Exception $e) {
+    error_log("Error al registrar inscripción: " . $e->getMessage());//se envia el mensaje
+    http_response_code(500);//codigo de respuesta en caso de que no se pueda hacer la incersion
+    echo json_encode([
+        "exito" => false,
+        "mensaje" => "Error al registrar la inscripción."
+    ], JSON_UNESCAPED_UNICODE);
 }
 
 ?>
