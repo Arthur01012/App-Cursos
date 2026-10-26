@@ -25,11 +25,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".vista.RegistroCursoActivity"
+            android:name=".vista.RegistroActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".vista.RegitroActivity"
+            android:name=".vista.RegistroActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>
