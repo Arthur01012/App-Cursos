@@ -19,7 +19,9 @@ interface ApiService {
     @GET("cargar_info_curso.php")
     suspend fun obtenerInfoCurso(@Query("codigo_curso") codigoCurso: String
     ): dataCursos
+
     @POST("inscribir.php")
-    suspend fun inscribirAlumno( @Body inscripcion: dataInscripcion
+    suspend fun inscribirAlumno(
+        @Body inscripcion: dataInscripcion
     ): dataRespuestaInscripcion
 }

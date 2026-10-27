@@ -1,7 +1,7 @@
 package com.example.app_cursos.presentador
 
 import com.example.app_cursos.modelo.clsInfoCursoModelo
-import com.example.app_cursos.vista.RegistroActivity
+import com.example.app_cursos.Vista.RegistroActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

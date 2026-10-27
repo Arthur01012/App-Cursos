@@ -1,4 +1,4 @@
-package com.example.app_cursos.vista
+package com.example.app_cursos.Vista
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -13,7 +13,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.app_cursos.Modelo.RetrofitCliente
 import com.example.app_cursos.Modelo.dataCursos
-import com.example.app_cursos.presentador.clsPresentadorInfoCurso
 import com.example.app_cursos.presentador.clsPresentadorInscripcion
 import com.example.app_cursos.R
 import com.example.app_cursos.modelo.dataInscripcion
@@ -21,7 +20,6 @@ import java.util.Calendar
 import java.util.Locale
 
 class RegistroActivity : AppCompatActivity() {
-    private lateinit var presenterCurso: clsPresentadorInfoCurso
     private lateinit var presenterInscripcion: clsPresentadorInscripcion
     private lateinit var txtNombreCurso: TextView
     private lateinit var imgCurso: ImageView
@@ -53,10 +51,11 @@ class RegistroActivity : AppCompatActivity() {
         codigoCurso = intent.getStringExtra(EXTRA_CODIGO_CURSO).orEmpty()
         configurarListeners()
 
-        presenterCurso = clsPresentadorInfoCurso(this)
         presenterInscripcion = clsPresentadorInscripcion(this)
-        btnConfirmar.isEnabled = false
-        presenterCurso.cargarCurso(codigoCurso)
+        mostrarCursoSeleccionado(
+            tituloCurso = intent.getStringExtra(EXTRA_TITULO_CURSO).orEmpty(),
+            rutaImagen = intent.getStringExtra(EXTRA_RUTA_IMAGEN)
+        )
     }
 
     private fun configurarListeners() {
@@ -68,10 +67,8 @@ class RegistroActivity : AppCompatActivity() {
         btnConfirmar.setOnClickListener { enviarInscripcion() }
     }
 
-    fun mostrarCurso(curso: dataCursos) {
-        txtNombreCurso.text = curso.tituloCurso
-
-        val rutaImagen = curso.rutaImgGrid
+    private fun mostrarCursoSeleccionado(tituloCurso: String, rutaImagen: String?) {
+        txtNombreCurso.text = tituloCurso.ifBlank { "Curso seleccionado" }
         if (rutaImagen.isNullOrBlank()) {
             imgCurso.setImageResource(android.R.drawable.ic_menu_gallery)
         } else {
@@ -83,6 +80,10 @@ class RegistroActivity : AppCompatActivity() {
         }
 
         btnConfirmar.isEnabled = true
+    }
+
+    fun mostrarCurso(curso: dataCursos) {
+        mostrarCursoSeleccionado(curso.tituloCurso, curso.rutaImgGrid)
     }
 
     fun mostrarError(mensaje: String) {
@@ -149,5 +150,7 @@ class RegistroActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_CODIGO_CURSO = "codigo_curso"
+        const val EXTRA_TITULO_CURSO = "titulo_curso"
+        const val EXTRA_RUTA_IMAGEN = "ruta_img_grid"
     }
 }
