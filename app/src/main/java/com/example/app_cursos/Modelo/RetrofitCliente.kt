@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlin.lazy
 object  RetrofitCliente {
-    private const val BASE_URL = "http://[IP]/sistema_cursos/"
+    private const val BASE_URL = "http://192.168.1.89/sistema_cursos/"
     private val jsonConfig = Json{
         ignoreUnknownKeys=true
         coerceInputValues=true
@@ -21,5 +21,6 @@ object  RetrofitCliente {
             .build()
             .create(ApiService::class.java)
     }
+    fun urlCompleta(ruta: String): String = BASE_URL + ruta.trimStart('/')
 }
 
