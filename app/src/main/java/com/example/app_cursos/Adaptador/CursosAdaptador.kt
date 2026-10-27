@@ -5,12 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.app_cursos.Modelo.dataCursos
 import com.example.app_cursos.R
+import com.example.app_cursos.Vista.MainActivity
 
-class CursosAdaptador (private var lista: List<dataCursos>) : RecyclerView.Adapter<CursosAdaptador.CursoViewHolder>()  {
+class CursosAdaptador(
+    private val activity: MainActivity,
+    private var lista: List<dataCursos>
+) : RecyclerView.Adapter<CursosAdaptador.CursoViewHolder>() {
     class CursoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtNombre: TextView = itemView.findViewById(R.id.txtCarrera)
         val txtSalon: TextView = itemView.findViewById(R.id.txtPrecio)
@@ -28,10 +32,14 @@ class CursosAdaptador (private var lista: List<dataCursos>) : RecyclerView.Adapt
         holder.txtSalon.text = curso.espacio
 
         Glide.with(holder.itemView.context)
-            .load("http://10.0.2.2/curso_api/" + curso.rutaImgGrid)
+            .load("http://192.168.1.89/sistema_cursos/" + curso.rutaImgGrid)
             .placeholder(android.R.drawable.ic_menu_gallery)
             .error(android.R.drawable.stat_notify_error)
             .into(holder.imgCurso)
+
+        holder.itemView.findViewById<View>(R.id.btnRegistrarse).setOnClickListener {
+            activity.seleccionarCurso(curso)
+        }
     }
     override fun getItemCount() = lista.size
 
