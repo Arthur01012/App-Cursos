@@ -39,13 +39,36 @@ class clsPresentadorInscripcion(private val vista: RegistroActivity) {
             } catch (_: IOException) {
                 null
             }
-            val mensaje = try {
-                cuerpo?.let { JSONObject(it).optString("mensaje").takeIf(String::isNotBlank) }
+            val respuestaError = try {
+                cuerpo?.let(::JSONObject)
             } catch (_: JSONException) {
                 null
             }
 
+            val mensaje = respuestaError
+                ?.optString("mensaje")
+                ?.takeIf(String::isNotBlank)
             if (mensaje != null) {
+                val codigoCursoRecibido = respuestaError
+                    .optString("codigo_curso_recibido")
+                    .takeIf(String::isNotBlank)
+                if (codigoCursoRecibido != null) {
+                    return "$mensaje Código recibido: $codigoCursoRecibido."
+                }
+
+                val camposFaltantes = respuestaError.optJSONArray("campos_faltantes")
+                if (camposFaltantes != null && camposFaltantes.length() > 0) {
+                    val nombres = mapOf(
+                        "codigo_curso" to "código del curso",
+                        "matricula" to "matrícula",
+                        "correo" to "correo",
+                        "fecha_registro" to "fecha de registro"
+                    )
+                    val faltantes = (0 until camposFaltantes.length())
+                        .map { camposFaltantes.optString(it) }
+                        .map { nombres[it] ?: it }
+                    return "$mensaje Campos que no llegaron: ${faltantes.joinToString()}."
+                }
                 return mensaje
             }
 
