@@ -21,5 +21,5 @@ object  RetrofitCliente {
             .build()
             .create(ApiService::class.java)
     }
+    fun urlCompleta(ruta: String): String = BASE_URL + ruta.trimStart('/')
 }
-

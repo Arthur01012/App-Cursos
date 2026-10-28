@@ -14,11 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app_cursos.Adaptador.CursosAdaptador
-import com.example.app_cursos.Modelo.dataCarrera
-import com.example.app_cursos.Modelo.dataCursos
+
 import com.example.app_cursos.Presentador.clsPresentadorCarrera
 import com.example.app_cursos.R
 import com.example.app_cursos.Vista.RegistroActivity
+import com.example.app_cursos.modelo.dataCarrera
+import com.example.app_cursos.modelo.dataCursos
 
 class MainActivity : AppCompatActivity() {
 
