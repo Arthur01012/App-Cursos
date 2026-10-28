@@ -1,41 +1,96 @@
 <?php
-    $host = "localhost";
-    $dbname = "sistema_cursos";
-    $user = "root";
-    $pass = "";
 
-    $idCarrera = isset ($_GET['idCarrera']) ? intval($_GET['idCarrera']) :0;
+header("Content-Type: application/json; charset=UTF-8");
 
-    try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+require_once "config/conexion.php";
 
-        if ($idCarrera > 0) {
-            $sql = "SELECT c.codigo_curso, c.titulo_curso, c.ruta_img_grid. c.capacidad,
-            COUNT (i.id_descripscion) as inscritos
-            From tbl_curso c
-            LEFT JOIN tbl_inscripciones i ON c.codigo_curso = i.codigo_curso
-            WHERE c.id_carrera = :idCarrera
-            GROUP BY c.codigo_curso";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam (':idCarrera', $idCarrera, PDO::PARAM_INT);
-            $stmt->execute();
-        } else {
-            $sql = "SELECT c.codigo_curso, c.titulo_curso, c.ruta_img_grid, c.capacidad,
-            COUNT(i.id_descripcion) as inscritos
-            FROM tbl_curso c
-            LEFT JOIN tbl_inscripciones i ON c.codigo_curso = i.codigo_curso
-            GROUP BY c.codigo_curso";
-            $stmt = $pdo->prepare($sql);
-        }
+$idCarrera = isset($_GET['idCarrera']) ? intval($_GET['idCarrera']) : 0;
 
-        $stmt->execute();
-        $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($resultados);
+try {
 
-    }catch(PDOException $e) {
-        http_response_code(500);
-        echo json_encode(array("error" => "Error en la conexión a la base de datos: " . $e->getMessage()));
+    if ($idCarrera > 0) {
+
+        $stmt = $pdo->prepare("
+            SELECT
+                c.codigo_curso,
+                c.idCarrera,
+                c.titulo_curso,
+                c.descripcion,
+                c.espacio,
+                c.total_horas,
+                c.dias_atencion,
+                c.horas_atencion,
+                c.ruta_img_grid,
+                c.capacidad,
+                COUNT(i.id_inscripcion) AS inscritos
+            FROM tbl_curso AS c
+            LEFT JOIN tbl_inscripciones AS i
+                ON c.codigo_curso = i.codigo_curso
+            WHERE c.idCarrera = ?
+            GROUP BY
+                c.codigo_curso,
+                c.idCarrera,
+                c.titulo_curso,
+                c.descripcion,
+                c.espacio,
+                c.total_horas,
+                c.dias_atencion,
+                c.horas_atencion,
+                c.ruta_img_grid,
+                c.capacidad
+        ");
+
+        $stmt->execute([$idCarrera]);
+
+    } else {
+
+        $stmt = $pdo->query("
+            SELECT
+                c.codigo_curso,
+                c.idCarrera,
+                c.titulo_curso,
+                c.descripcion,
+                c.espacio,
+                c.total_horas,
+                c.dias_atencion,
+                c.horas_atencion,
+                c.ruta_img_grid,
+                c.capacidad,
+                COUNT(i.id_inscripcion) AS inscritos
+            FROM tbl_curso AS c
+            LEFT JOIN tbl_inscripciones AS i
+                ON c.codigo_curso = i.codigo_curso
+            GROUP BY
+                c.codigo_curso,
+                c.idCarrera,
+                c.titulo_curso,
+                c.descripcion,
+                c.espacio,
+                c.total_horas,
+                c.dias_atencion,
+                c.horas_atencion,
+                c.ruta_img_grid,
+                c.capacidad
+        ");
     }
+
+    $cursos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($cursos as &$c) {
+        $c['idCarrera'] = (int)$c['idCarrera'];
+        $c['capacidad'] = (int)$c['capacidad'];
+        $c['inscritos'] = (int)$c['inscritos'];
+    }
+
+    echo json_encode($cursos);
+
+} catch (Exception $e) {
+
+    header("HTTP/1.1 500 Internal Server Error");
+
+    echo json_encode([
+        "error" => "Error al obtener catálogo de cursos: " . $e->getMessage()
+    ]);
+}
 
 ?>
