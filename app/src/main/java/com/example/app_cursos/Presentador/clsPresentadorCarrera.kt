@@ -34,6 +34,8 @@ class clsPresentadorCarrera(val vista: MainActivity)  {
             }
         }
     }
+
+
     fun seleccionarCarrera(position:Int)
     {
         if(position >= 0 && position < listaCarreras.size)
@@ -44,6 +46,11 @@ class clsPresentadorCarrera(val vista: MainActivity)  {
     }
     fun seleccionarCurso(curso: dataCursos) {
         vista.abrirRegistroCurso(curso)
+    }
+
+    fun seleccionarCursosetalle(curso: dataCursos)
+    {
+        vista.abrirDetalleCurso(curso.id,curso.codigoCurso,curso.tituloCurso,curso.descripcion,curso.espacio,curso.totalHoras,curso.diasAtencion,curso.horasAtencion,curso.rutaImgGrid)
     }
     private fun cargarCursos(idCarrera: Int) {
         CoroutineScope(Dispatchers.Main).launch {

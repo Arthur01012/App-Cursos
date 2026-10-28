@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class dataCursos(
+    @SerialName("id") val id:Int = 0,
     @SerialName("codigo_curso") val codigoCurso: String,
     @SerialName("idCarrera") val idCarrera: Int,
     @SerialName("titulo_curso") val tituloCurso: String,
@@ -15,5 +16,5 @@ data class dataCursos(
     @SerialName("horas_atencion") val horasAtencion: String,
     @SerialName("ruta_img_grid") val rutaImgGrid: String? = null,
     @SerialName("capacidad") val capacidad: Int,
-    @SerialName("ruta_img_bg")  val ruatImgbg: String? = null
+
 )

@@ -16,6 +16,9 @@ interface ApiService {
     @GET("obtener_carrera.php")
     suspend fun obtenerCursos(@Query("idCarrera") idCarrera: Int): List<dataCursos>
 
+    @GET("detalle_curso.php")
+    suspend fun obtenerDetalleCurso(@Query("codigo_curso") codigoCurso: String): dataCursos
+
     @GET("cargar_info_curso.php")
     suspend fun obtenerInfoCurso(@Query("codigo_curso") codigoCurso: String
     ): dataCursos
