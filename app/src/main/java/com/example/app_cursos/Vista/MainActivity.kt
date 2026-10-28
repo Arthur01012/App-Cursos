@@ -1,5 +1,6 @@
 package com.example.app_cursos.Vista
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -17,6 +18,7 @@ import com.example.app_cursos.Modelo.dataCarrera
 import com.example.app_cursos.Modelo.dataCursos
 import com.example.app_cursos.Presentador.clsPresentadorCarrera
 import com.example.app_cursos.R
+import com.example.app_cursos.Vista.RegistroActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         recyclerCursos=findViewById(R.id.rvLista)
 
         recyclerCursos.layoutManager = GridLayoutManager (this,2)
-        adapterCursos = CursosAdaptador(emptyList())
+        adapterCursos = CursosAdaptador(this, emptyList())
         presenter = clsPresentadorCarrera(this)
         recyclerCursos.adapter = adapterCursos
 
@@ -69,6 +71,16 @@ class MainActivity : AppCompatActivity() {
     }
     fun mostrarCursos(cursos: List<dataCursos>) {
         adapterCursos.actualizarLista(cursos)
+    }
+    fun seleccionarCurso(curso: dataCursos) {
+        presenter.seleccionarCurso(curso)
+    }
+    fun abrirRegistroCurso(curso: dataCursos) {
+        val intent = Intent(this, RegistroActivity::class.java)
+            .putExtra(RegistroActivity.EXTRA_CODIGO_CURSO, curso.codigoCurso)
+            .putExtra(RegistroActivity.EXTRA_TITULO_CURSO, curso.tituloCurso)
+            .putExtra(RegistroActivity.EXTRA_RUTA_IMAGEN, curso.rutaImgGrid)
+        startActivity(intent)
     }
     fun mostrarMensajeExito(id:Int, nombre:String)
     {
