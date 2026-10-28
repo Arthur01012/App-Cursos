@@ -2,22 +2,20 @@ package com.example.app_cursos.Vista
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
 import com.example.app_cursos.Modelo.RetrofitCliente
 import com.example.app_cursos.R
@@ -48,24 +46,11 @@ class RegistroActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_regitro)
 
-        ViewCompat.setOnApplyWindowInsetsListener(
-            findViewById(R.id.main),
-            object : OnApplyWindowInsetsListener {
-                override fun onApplyWindowInsets(
-                    view: View,
-                    insets: WindowInsetsCompat
-                ): WindowInsetsCompat {
-                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                    view.setPadding(
-                        systemBars.left,
-                        systemBars.top,
-                        systemBars.right,
-                        systemBars.bottom
-                    )
-                    return insets
-                }
-            }
-        )
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
         txtNombreCurso = findViewById(R.id.txtNombreCurso)
         imgCurso = findViewById(R.id.imgCurso)
