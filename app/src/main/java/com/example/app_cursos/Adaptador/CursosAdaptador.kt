@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.app_cursos.R
 import com.example.app_cursos.Vista.MainActivity
-import com.example.app_cursos.modelo.dataCursos
+import com.example.app_cursos.Modelo.dataCursos
 
 class CursosAdaptador(
     private val activity: MainActivity,

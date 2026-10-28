@@ -1,4 +1,4 @@
-package com.example.app_cursos.modelo
+package com.example.app_cursos.Modelo
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

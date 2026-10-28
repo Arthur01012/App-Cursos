@@ -19,9 +19,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.app_cursos.Modelo.RetrofitCliente
 import com.example.app_cursos.R
-import com.example.app_cursos.modelo.dataAlumno
-import com.example.app_cursos.modelo.dataInscripcion
-import com.example.app_cursos.presentador.clsPresentadorInscripcion
+import com.example.app_cursos.Modelo.dataAlumno
+import com.example.app_cursos.Modelo.dataInscripcion
+import com.example.app_cursos.Presentador.clsPresentadorInscripcion
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
 import java.util.Date
