@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerCursos : RecyclerView
     private lateinit var adapterCursos: CursosAdaptador
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         adapterCursos.actualizarLista(cursos)
     }
     fun seleccionarCurso(curso: dataCursos) {
-        presenter.seleccionarCurso(curso)
+        presenter.seleccionarCursosetalle(curso)
     }
     fun abrirRegistroCurso(curso: dataCursos) {
         val intent = Intent(this, RegistroActivity::class.java)
@@ -82,6 +83,27 @@ class MainActivity : AppCompatActivity() {
             .putExtra(RegistroActivity.EXTRA_RUTA_IMAGEN, curso.rutaImgGrid)
         startActivity(intent)
     }
+
+    fun abrirDetalleCurso(
+        id:Int,codigoCurso: String, nombreCurso: String, descripcion: String,
+        espacio: String, totalHoras: Int, diasAtencion: String, horasAtencion: String,
+        rutaImagen: String?
+    ) {
+        val intent = Intent(this, DetalleCursoActivity::class.java)
+        intent.putExtra("ID_CURSO",id)
+        intent.putExtra("CODIGO_CURSO", codigoCurso)
+        intent.putExtra("NOMBRE_CURSO", nombreCurso)
+        intent.putExtra("DESCRIPCION", descripcion)
+        intent.putExtra("ESPACIO", espacio)
+        intent.putExtra("TOTAL_HORAS", totalHoras)
+        intent.putExtra("DIAS_ATENCION", diasAtencion)
+        intent.putExtra("HORAS_ATENCION", horasAtencion)
+        intent.putExtra("RUTA_IMAGEN", rutaImagen)
+        startActivity(intent)
+    }
+
+
+
     fun mostrarMensajeExito(id:Int, nombre:String)
     {
         Toast.makeText(this,"ID: " + id.toString() + " -Seleccionaste:"+nombre, Toast.LENGTH_SHORT).show()

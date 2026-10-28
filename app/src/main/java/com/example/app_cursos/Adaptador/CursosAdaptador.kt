@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.material3.Button
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.app_cursos.Modelo.dataCursos
@@ -19,6 +20,8 @@ class CursosAdaptador(
         val txtNombre: TextView = itemView.findViewById(R.id.txtCarrera)
         val txtSalon: TextView = itemView.findViewById(R.id.txtPrecio)
         val imgCurso: ImageView = itemView.findViewById(R.id.imgCarrera)
+
+        val btnDetalle: Button = itemView.findViewById(R.id.btnVerDetalle)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CursoViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -36,6 +39,10 @@ class CursosAdaptador(
             .placeholder(android.R.drawable.ic_menu_gallery)
             .error(android.R.drawable.stat_notify_error)
             .into(holder.imgCurso)
+
+        holder.btnDetalle.SetOnClickListener {
+            activity.seleccionarCurso(curso)
+        }
 
         holder.itemView.findViewById<View>(R.id.btnRegistrarse).setOnClickListener {
             activity.seleccionarCurso(curso)
