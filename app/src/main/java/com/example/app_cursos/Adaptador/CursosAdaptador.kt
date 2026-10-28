@@ -7,9 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.app_cursos.Modelo.dataCursos
 import com.example.app_cursos.R
 import com.example.app_cursos.Vista.MainActivity
+import com.example.app_cursos.modelo.dataCursos
 
 class CursosAdaptador(
     private val activity: MainActivity,
@@ -32,7 +32,7 @@ class CursosAdaptador(
         holder.txtSalon.text = curso.espacio
 
         Glide.with(holder.itemView.context)
-            .load("http://10.190.44.235/sistema_cursos/" + curso.rutaImgGrid)
+            .load("http://192.168.1.89/sistema_cursos/" + curso.rutaImgGrid)
             .placeholder(android.R.drawable.ic_menu_gallery)
             .error(android.R.drawable.stat_notify_error)
             .into(holder.imgCurso)
