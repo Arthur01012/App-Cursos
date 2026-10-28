@@ -32,7 +32,7 @@ class CursosAdaptador(
         holder.txtSalon.text = curso.espacio
 
         Glide.with(holder.itemView.context)
-            .load("http://10.234.225.235/sistema_cursos/" + curso.rutaImgGrid)
+            .load("http://10.156.106.107/sistema_cursos/" + curso.rutaImgGrid)
             .placeholder(android.R.drawable.ic_menu_gallery)
             .error(android.R.drawable.stat_notify_error)
             .into(holder.imgCurso)
