@@ -1,80 +1,104 @@
 package com.example.app_cursos.presentador
 
-import com.example.app_cursos.modelo.clsInscripcionModelo
-import com.example.app_cursos.modelo.dataInscripcion
 import com.example.app_cursos.Vista.RegistroActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.app_cursos.modelo.clsInscripcionModelo
+import com.example.app_cursos.modelo.dataAlumno
+import com.example.app_cursos.modelo.dataInscripcion
+import com.example.app_cursos.modelo.dataRespuestaInscripcion
 import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.HttpException
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
 
 class clsPresentadorInscripcion(private val vista: RegistroActivity) {
     private val modelo = clsInscripcionModelo()
 
-    fun inscribir(solicitud: dataInscripcion) {
-        CoroutineScope(Dispatchers.Main).launch {
-            vista.mostrarCargando(true)
-            try {
-                val respuesta = modelo.inscribirAlumno(solicitud)
-                if (respuesta.exito) {
-                    vista.mostrarResultadoInscripcion(respuesta.mensaje)
+    fun buscarAlumno(matricula: String) {
+        vista.mostrarBuscandoAlumno(true)
+        modelo.obtenerAlumno(matricula).enqueue(object : Callback<dataAlumno> {
+            override fun onResponse(
+                llamada: Call<dataAlumno>,
+                respuesta: Response<dataAlumno>
+            ) {
+                vista.mostrarBuscandoAlumno(false)
+                if (respuesta.isSuccessful) {
+                    val alumno = respuesta.body()
+                    if (alumno == null || alumno.correo.isBlank()) {
+                        vista.mostrarError("La API no devolvió un correo institucional para esta matrícula.")
+                    } else {
+                        vista.mostrarDatosAlumno(alumno)
+                    }
                 } else {
-                    vista.mostrarError(respuesta.mensaje)
+                    vista.mostrarError(leerMensajeError(respuesta))
                 }
-            } catch (e: Exception) {
-                vista.mostrarError(obtenerMensajeError(e))
-            } finally {
-                vista.mostrarCargando(false)
             }
-        }
+
+            override fun onFailure(llamada: Call<dataAlumno>, error: Throwable) {
+                vista.mostrarBuscandoAlumno(false)
+                vista.mostrarError(
+                    "No se pudo consultar la matrícula: ${error.localizedMessage ?: "error de conexión"}"
+                )
+            }
+        })
     }
 
-    private fun obtenerMensajeError(error: Exception): String {
-        if (error is HttpException) {
-            val cuerpo = try {
-                error.response()?.errorBody()?.string()
-            } catch (_: IOException) {
-                null
-            }
-            val respuestaError = try {
-                cuerpo?.let(::JSONObject)
-            } catch (_: JSONException) {
-                null
-            }
-
-            val mensaje = respuestaError
-                ?.optString("mensaje")
-                ?.takeIf(String::isNotBlank)
-            if (mensaje != null) {
-                val codigoCursoRecibido = respuestaError
-                    .optString("codigo_curso_recibido")
-                    .takeIf(String::isNotBlank)
-                if (codigoCursoRecibido != null) {
-                    return "$mensaje Código recibido: $codigoCursoRecibido."
+    fun inscribir(solicitud: dataInscripcion) {
+        vista.mostrarCargando(true)
+        modelo.inscribirAlumno(solicitud).enqueue(object : Callback<dataRespuestaInscripcion> {
+            override fun onResponse(
+                llamada: Call<dataRespuestaInscripcion>,
+                respuesta: Response<dataRespuestaInscripcion>
+            ) {
+                vista.mostrarCargando(false)
+                if (respuesta.isSuccessful) {
+                    val resultado = respuesta.body()
+                    if (resultado != null && resultado.exito) {
+                        vista.mostrarResultadoInscripcion(resultado.mensaje)
+                    } else {
+                        vista.mostrarError(
+                            resultado?.mensaje ?: "La API no devolvió la confirmación de inscripción."
+                        )
+                    }
+                } else {
+                    vista.mostrarError(leerMensajeError(respuesta))
                 }
-
-                val camposFaltantes = respuestaError.optJSONArray("campos_faltantes")
-                if (camposFaltantes != null && camposFaltantes.length() > 0) {
-                    val nombres = mapOf(
-                        "codigo_curso" to "código del curso",
-                        "matricula" to "matrícula",
-                        "correo" to "correo",
-                        "fecha_registro" to "fecha de registro"
-                    )
-                    val faltantes = (0 until camposFaltantes.length())
-                        .map { camposFaltantes.optString(it) }
-                        .map { nombres[it] ?: it }
-                    return "$mensaje Campos que no llegaron: ${faltantes.joinToString()}."
-                }
-                return mensaje
             }
 
-            return "Error del servidor (${error.code()})."
+            override fun onFailure(
+                llamada: Call<dataRespuestaInscripcion>,
+                error: Throwable
+            ) {
+                vista.mostrarCargando(false)
+                vista.mostrarError(
+                    "No se pudo enviar la inscripción: ${error.localizedMessage ?: "error de conexión"}"
+                )
+            }
+        })
+    }
+
+    private fun leerMensajeError(respuesta: Response<*>): String {
+        val cuerpo = try {
+            respuesta.errorBody()?.string()
+        } catch (error: IOException) {
+            return "Error del servidor (${respuesta.code()}); no se pudo leer el detalle."
         }
 
-        return "Error al registrar la inscripción: ${error.localizedMessage ?: "Error desconocido"}"
+        if (cuerpo.isNullOrBlank()) {
+            return "Error del servidor (${respuesta.code()})."
+        }
+
+        return try {
+            val json = JSONObject(cuerpo)
+            val mensaje = json.optString("mensaje")
+            if (mensaje.isNotBlank()) {
+                mensaje
+            } else {
+                "Error del servidor (${respuesta.code()})."
+            }
+        } catch (error: JSONException) {
+            "Error del servidor (${respuesta.code()})."
+        }
     }
 }

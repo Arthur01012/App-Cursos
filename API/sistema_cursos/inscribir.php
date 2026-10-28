@@ -6,7 +6,7 @@ require_once "./config/conexion.php";
 $jsonInput = file_get_contents("php://input");
 $datos = json_decode($jsonInput, true);
 
-$camposRequeridos = ["codigo_curso", "matricula", "correo", "fecha_registro"];
+$camposRequeridos = ["codigo_curso", "matricula", "fecha_registro"];
 if (!is_array($datos)) {
     $datos = $_POST;
 }
@@ -21,7 +21,6 @@ foreach ($camposRequeridos as $campo) {
 
 $codigoCurso = $valores["codigo_curso"];
 $matricula = $valores["matricula"];
-$correo = $valores["correo"];
 $fechaRegistro = $valores["fecha_registro"];
 
 //verificar que todos los campos esten llenos
@@ -35,7 +34,7 @@ if (in_array(false, $camposRecibidos, true)) {// si alguna esta vacio se envia u
     http_response_code(400);//Faltan los datos requeridos
     echo json_encode([
         "exito" => false,
-        "mensaje" => "Debe enviar el curso, la matrícula, el correo y la fecha de registro.",
+        "mensaje" => "Debe enviar el curso, la matrícula y la fecha de registro.",
         "campos_recibidos" => $camposRecibidos,
         "campos_faltantes" => $camposFaltantes
     ], JSON_UNESCAPED_UNICODE);
@@ -60,23 +59,20 @@ try {
         exit;
     }//eliminar esta verificacion cuando ya se tenga lista la vista
 
-    // Agrupar el alta del alumno y la inscripción para guardar ambas operaciones juntas
-    $pdo->beginTransaction();
-
-    // Buscar si la matrícula ya está registrada como alumno
     $consultaAlumno = $pdo->prepare(
         "SELECT matricula FROM tbl_alumnos WHERE matricula = ?"
     );
     $consultaAlumno->execute([$matricula]);
-    $alumno = $consultaAlumno->fetch();
-
-    // Si el alumno todavía no existe, registrarlo con su correo    
-    if (!$alumno) {
-        $nuevoAlumno = $pdo->prepare(
-            "INSERT INTO tbl_alumnos (matricula, correo) VALUES (?, ?)"
-        );
-        $nuevoAlumno->execute([$matricula, $correo]);
+    if (!$consultaAlumno->fetch()) {
+        http_response_code(404);
+        echo json_encode([
+            "exito" => false,
+            "mensaje" => "No existe un alumno registrado con esa matrícula."
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
+
+    $pdo->beginTransaction();
 
     // Crear la inscripción asociando el curso, el alumno y la fecha recibidos
     $inscripcion = $pdo->prepare(

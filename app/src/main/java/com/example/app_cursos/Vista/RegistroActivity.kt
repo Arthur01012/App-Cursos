@@ -1,22 +1,32 @@
 package com.example.app_cursos.Vista
 
-import android.app.DatePickerDialog
+import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import com.bumptech.glide.Glide
 import com.example.app_cursos.Modelo.RetrofitCliente
-import com.example.app_cursos.Modelo.dataCursos
-import com.example.app_cursos.presentador.clsPresentadorInscripcion
 import com.example.app_cursos.R
+import com.example.app_cursos.modelo.dataAlumno
 import com.example.app_cursos.modelo.dataInscripcion
-import java.util.Calendar
+import com.example.app_cursos.presentador.clsPresentadorInscripcion
+import com.google.android.material.button.MaterialButton
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class RegistroActivity : AppCompatActivity() {
@@ -24,22 +34,38 @@ class RegistroActivity : AppCompatActivity() {
     private lateinit var txtNombreCurso: TextView
     private lateinit var imgCurso: ImageView
     private lateinit var etMatricula: EditText
-    private lateinit var etFecha: EditText
+    private lateinit var etFecha: TextView
     private lateinit var etCorreo: EditText
-    private lateinit var btnConfirmar: com.google.android.material.button.MaterialButton
+    private lateinit var btnConfirmar: MaterialButton
     private var codigoCurso: String = ""
-    private var fechaSeleccionada: Calendar? = null
+    private var matriculaConsultada: String = ""
+    private var correoAlumno: String = ""
+    private var fechaRegistro: String = ""
+    private var inscripcionEnviandose: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_regitro)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        ViewCompat.setOnApplyWindowInsetsListener(
+            findViewById(R.id.main),
+            object : OnApplyWindowInsetsListener {
+                override fun onApplyWindowInsets(
+                    view: View,
+                    insets: WindowInsetsCompat
+                ): WindowInsetsCompat {
+                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                    view.setPadding(
+                        systemBars.left,
+                        systemBars.top,
+                        systemBars.right,
+                        systemBars.bottom
+                    )
+                    return insets
+                }
+            }
+        )
 
         txtNombreCurso = findViewById(R.id.txtNombreCurso)
         imgCurso = findViewById(R.id.imgCurso)
@@ -47,28 +73,94 @@ class RegistroActivity : AppCompatActivity() {
         etFecha = findViewById(R.id.etFecha)
         etCorreo = findViewById(R.id.etCorreo)
         btnConfirmar = findViewById(R.id.btnConfirmar)
+        presenterInscripcion = clsPresentadorInscripcion(this)
 
         codigoCurso = intent.getStringExtra(EXTRA_CODIGO_CURSO).orEmpty()
-        configurarListeners()
-
-        presenterInscripcion = clsPresentadorInscripcion(this)
         mostrarCursoSeleccionado(
-            tituloCurso = intent.getStringExtra(EXTRA_TITULO_CURSO).orEmpty(),
-            rutaImagen = intent.getStringExtra(EXTRA_RUTA_IMAGEN)
+            intent.getStringExtra(EXTRA_TITULO_CURSO).orEmpty(),
+            intent.getStringExtra(EXTRA_RUTA_IMAGEN)
         )
+        configurarListeners()
+        actualizarEstadoConfirmacion()
+
+        if (codigoCurso.isBlank()) {
+            mostrarError("No se recibió el código del curso.")
+        }
     }
 
     private fun configurarListeners() {
-        findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
-        findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
-            .setOnClickListener { finish() }
-        etFecha.setOnClickListener { mostrarSelectorDeFecha() }
-        findViewById<ImageView>(R.id.btnCalendar).setOnClickListener { mostrarSelectorDeFecha() }
-        btnConfirmar.setOnClickListener { enviarInscripcion() }
+        findViewById<ImageView>(R.id.btnBack).setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                finish()
+            }
+        })
+        findViewById<MaterialButton>(R.id.btnCancel)
+            .setOnClickListener(object : View.OnClickListener {
+                override fun onClick(view: View?) {
+                    finish()
+                }
+            })
+        btnConfirmar.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                enviarInscripcion()
+            }
+        })
+        etMatricula.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+            override fun onEditorAction(
+                view: TextView?,
+                actionId: Int,
+                event: KeyEvent?
+            ): Boolean {
+                return buscarDatos(actionId)
+            }
+        })
+        etMatricula.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                texto: CharSequence?,
+                inicio: Int,
+                cantidad: Int,
+                despues: Int
+            ) {}
+
+            override fun onTextChanged(
+                texto: CharSequence?,
+                inicio: Int,
+                antes: Int,
+                cantidad: Int
+            ) {}
+
+            override fun afterTextChanged(texto: Editable?) {
+                if (matriculaConsultada.isNotEmpty() &&
+                    etMatricula.text.toString().trim() != matriculaConsultada
+                ) {
+                    limpiarDatosAlumno()
+                }
+            }
+        })
+    }
+
+    private fun buscarDatos(actionId: Int): Boolean {
+        if (actionId != EditorInfo.IME_ACTION_GO) {
+            return false
+        }
+
+        val teclado = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        teclado.hideSoftInputFromWindow(etMatricula.windowToken, 0)
+
+        val matricula = etMatricula.text.toString().trim()
+        if (matricula.isBlank()) {
+            etMatricula.error = "Ingresa tu matrícula."
+            etMatricula.requestFocus()
+            return true
+        }
+
+        limpiarDatosAlumno()
+        presenterInscripcion.buscarAlumno(matricula)
+        return true
     }
 
     private fun mostrarCursoSeleccionado(tituloCurso: String, rutaImagen: String?) {
-        txtNombreCurso.text = tituloCurso.ifBlank { "Curso seleccionado" }
+        txtNombreCurso.text = if (tituloCurso.isBlank()) "Curso seleccionado" else tituloCurso
         if (rutaImagen.isNullOrBlank()) {
             imgCurso.setImageResource(android.R.drawable.ic_menu_gallery)
         } else {
@@ -78,12 +170,26 @@ class RegistroActivity : AppCompatActivity() {
                 .error(android.R.drawable.stat_notify_error)
                 .into(imgCurso)
         }
-
-        btnConfirmar.isEnabled = true
     }
 
-    fun mostrarCurso(curso: dataCursos) {
-        mostrarCursoSeleccionado(curso.tituloCurso, curso.rutaImgGrid)
+    fun mostrarDatosAlumno(alumno: dataAlumno) {
+        if (alumno.matricula != etMatricula.text.toString().trim()) {
+            return
+        }
+
+        matriculaConsultada = alumno.matricula
+        correoAlumno = alumno.correo
+        fechaRegistro = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
+        etCorreo.setText(correoAlumno)
+        etFecha.setText(fechaRegistro)
+        actualizarEstadoConfirmacion()
+    }
+
+    fun mostrarBuscandoAlumno(busqueda: Boolean) {
+        etMatricula.isEnabled = !busqueda
+        if (!busqueda) {
+            etMatricula.requestFocus()
+        }
     }
 
     fun mostrarError(mensaje: String) {
@@ -91,8 +197,9 @@ class RegistroActivity : AppCompatActivity() {
     }
 
     fun mostrarCargando(cargando: Boolean) {
-        btnConfirmar.isEnabled = !cargando
+        inscripcionEnviandose = cargando
         btnConfirmar.text = if (cargando) "ENVIANDO..." else "CONFIRMAR INSCRIPCIÓN"
+        actualizarEstadoConfirmacion()
     }
 
     fun mostrarResultadoInscripcion(mensaje: String) {
@@ -100,52 +207,37 @@ class RegistroActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun enviarInscripcion() {
-        val matricula = etMatricula.text.toString().trim()
-        val correo = etCorreo.text.toString().trim()
-        val fecha = etFecha.text.toString().trim()
-
-        when {
-            codigoCurso.isBlank() -> mostrarError("No se recibió el código del curso.")
-            matricula.isBlank() -> {
-                etMatricula.error = "Ingresa tu matrícula."
-                etMatricula.requestFocus()
-            }
-            fecha.isBlank() -> {
-                etFecha.error = "Selecciona la fecha de registro."
-                etFecha.requestFocus()
-            }
-            correo.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
-                etCorreo.error = "Ingresa un correo válido."
-                etCorreo.requestFocus()
-            }
-            else -> presenterInscripcion.inscribir(
-                dataInscripcion(
-                    codigoCurso = codigoCurso,
-                    matricula = matricula,
-                    correo = correo,
-                    fechaRegistro = fecha
-                )
-            )
-        }
+    private fun limpiarDatosAlumno() {
+        matriculaConsultada = ""
+        correoAlumno = ""
+        fechaRegistro = ""
+        etCorreo.setText("")
+        etFecha.text = ""
+        actualizarEstadoConfirmacion()
     }
 
-    private fun mostrarSelectorDeFecha() {
-        val calendario = (fechaSeleccionada ?: Calendar.getInstance()).clone() as Calendar
-        DatePickerDialog(
-            this,
-            { _, anio, mes, dia ->
-                fechaSeleccionada = Calendar.getInstance().apply {
-                    set(anio, mes, dia)
-                }
-                etFecha.setText(
-                    String.format(Locale.US, "%04d-%02d-%02d", anio, mes + 1, dia)
-                )
-            },
-            calendario.get(Calendar.YEAR),
-            calendario.get(Calendar.MONTH),
-            calendario.get(Calendar.DAY_OF_MONTH)
-        ).show()
+    private fun actualizarEstadoConfirmacion() {
+        btnConfirmar.isEnabled =
+            codigoCurso.isNotBlank() &&
+                matriculaConsultada.isNotBlank() &&
+                correoAlumno.isNotBlank() &&
+                fechaRegistro.isNotBlank() &&
+                !inscripcionEnviandose
+    }
+
+    private fun enviarInscripcion() {
+        if (etMatricula.text.toString().trim() != matriculaConsultada) {
+            mostrarError("Consulta la matrícula con el botón GO antes de confirmar.")
+            return
+        }
+
+        presenterInscripcion.inscribir(
+            dataInscripcion(
+                codigoCurso = codigoCurso,
+                matricula = matriculaConsultada,
+                fechaRegistro = fechaRegistro
+            )
+        )
     }
 
     companion object {

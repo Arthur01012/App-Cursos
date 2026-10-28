@@ -37,9 +37,12 @@ class CursosAdaptador(
             .error(android.R.drawable.stat_notify_error)
             .into(holder.imgCurso)
 
-        holder.itemView.findViewById<View>(R.id.btnRegistrarse).setOnClickListener {
-            activity.seleccionarCurso(curso)
-        }
+        holder.itemView.findViewById<View>(R.id.btnRegistrarse)
+            .setOnClickListener(object : View.OnClickListener {
+                override fun onClick(v: View?) {
+                    activity.seleccionarCurso(curso)
+                }
+            })
     }
     override fun getItemCount() = lista.size
 
