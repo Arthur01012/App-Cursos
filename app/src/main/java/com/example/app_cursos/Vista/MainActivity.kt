@@ -20,6 +20,7 @@ import com.example.app_cursos.R
 import com.example.app_cursos.Vista.RegistroActivity
 import com.example.app_cursos.Modelo.dataCarrera
 import com.example.app_cursos.Modelo.dataCursos
+import com.google.android.material.button.MaterialButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinner : Spinner
     private lateinit var recyclerCursos : RecyclerView
     private lateinit var adapterCursos: CursosAdaptador
+    private lateinit var btnVerRegistros: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         spinner = findViewById(R.id.spnCarreras)
         recyclerCursos=findViewById(R.id.rvLista)
+        btnVerRegistros = findViewById(R.id.btnVerRegistros)
 
         recyclerCursos.layoutManager = GridLayoutManager (this,2)
         adapterCursos = CursosAdaptador(this, emptyList())
@@ -63,6 +66,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+        btnVerRegistros.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                startActivity(Intent(this@MainActivity, VerRegistroActivity::class.java))
+            }
+        })
     }
     fun mostrarCarreras(carrera:List<dataCarrera>)
     {
