@@ -1,6 +1,5 @@
-package com.example.app_cursos.modelo
+package com.example.app_cursos.Modelo
 
-import com.example.app_cursos.Modelo.RetrofitCliente
 import retrofit2.Call
 
 class clsInscripcionModelo {

@@ -1,6 +1,6 @@
 package com.example.app_cursos.Modelo
 
-import com.example.app_cursos.modelo.dataCarrera
+import com.example.app_cursos.Modelo.dataCarrera
 
 class clsCarrerasModelo {
     suspend fun obtenerCarreras(): List<dataCarrera> {
