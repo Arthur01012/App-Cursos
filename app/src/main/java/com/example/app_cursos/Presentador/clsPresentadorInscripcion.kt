@@ -5,12 +5,9 @@ import com.example.app_cursos.Modelo.clsInscripcionModelo
 import com.example.app_cursos.Modelo.dataAlumno
 import com.example.app_cursos.Modelo.dataInscripcion
 import com.example.app_cursos.Modelo.dataRespuestaInscripcion
-import org.json.JSONException
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
 
 class clsPresentadorInscripcion(private val vista: RegistroActivity) {
     private val modelo = clsInscripcionModelo()
@@ -23,23 +20,19 @@ class clsPresentadorInscripcion(private val vista: RegistroActivity) {
                 respuesta: Response<dataAlumno>
             ) {
                 vista.mostrarBuscandoAlumno(false)
-                if (respuesta.isSuccessful) {
-                    val alumno = respuesta.body()
-                    if (alumno == null || alumno.correo.isBlank()) {
-                        vista.mostrarError("La API no devolvió un correo institucional para esta matrícula.")
-                    } else {
-                        vista.mostrarDatosAlumno(alumno)
-                    }
-                } else {
-                    vista.mostrarError(leerMensajeError(respuesta))
+                val alumno = respuesta.body()
+
+                if (respuesta.isSuccessful && alumno != null) {
+                    vista.mostrarDatosAlumno(alumno)
+                    return
                 }
+
+                vista.mostrarError("No se encontró la matrícula.")
             }
 
             override fun onFailure(llamada: Call<dataAlumno>, error: Throwable) {
                 vista.mostrarBuscandoAlumno(false)
-                vista.mostrarError(
-                    "No se pudo consultar la matrícula: ${error.localizedMessage ?: "error de conexión"}"
-                )
+                vista.mostrarError("No se pudo consultar la matrícula.")
             }
         })
     }
@@ -52,18 +45,14 @@ class clsPresentadorInscripcion(private val vista: RegistroActivity) {
                 respuesta: Response<dataRespuestaInscripcion>
             ) {
                 vista.mostrarCargando(false)
-                if (respuesta.isSuccessful) {
-                    val resultado = respuesta.body()
-                    if (resultado != null && resultado.exito) {
-                        vista.mostrarResultadoInscripcion(resultado.mensaje)
-                    } else {
-                        vista.mostrarError(
-                            resultado?.mensaje ?: "La API no devolvió la confirmación de inscripción."
-                        )
-                    }
-                } else {
-                    vista.mostrarError(leerMensajeError(respuesta))
+                val resultado = respuesta.body()
+
+                if (respuesta.isSuccessful && resultado != null && resultado.exito) {
+                    vista.mostrarResultadoInscripcion(resultado.mensaje)
+                    return
                 }
+
+                vista.mostrarError("No se pudo confirmar la inscripción.")
             }
 
             override fun onFailure(
@@ -71,34 +60,8 @@ class clsPresentadorInscripcion(private val vista: RegistroActivity) {
                 error: Throwable
             ) {
                 vista.mostrarCargando(false)
-                vista.mostrarError(
-                    "No se pudo enviar la inscripción: ${error.localizedMessage ?: "error de conexión"}"
-                )
+                vista.mostrarError("No se pudo enviar la inscripción.")
             }
         })
-    }
-
-    private fun leerMensajeError(respuesta: Response<*>): String {
-        val cuerpo = try {
-            respuesta.errorBody()?.string()
-        } catch (error: IOException) {
-            return "Error del servidor (${respuesta.code()}); no se pudo leer el detalle."
-        }
-
-        if (cuerpo.isNullOrBlank()) {
-            return "Error del servidor (${respuesta.code()})."
-        }
-
-        return try {
-            val json = JSONObject(cuerpo)
-            val mensaje = json.optString("mensaje")
-            if (mensaje.isNotBlank()) {
-                mensaje
-            } else {
-                "Error del servidor (${respuesta.code()})."
-            }
-        } catch (error: JSONException) {
-            "Error del servidor (${respuesta.code()})."
-        }
     }
 }
