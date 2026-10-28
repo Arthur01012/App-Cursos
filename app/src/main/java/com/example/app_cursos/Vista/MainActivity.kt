@@ -82,10 +82,6 @@ class MainActivity : AppCompatActivity() {
             .putExtra(RegistroActivity.EXTRA_RUTA_IMAGEN, curso.rutaImgGrid)
         startActivity(intent)
     }
-    fun mostrarMensajeExito(id:Int, nombre:String)
-    {
-        Toast.makeText(this,"ID: " + id.toString() + " -Seleccionaste:"+nombre, Toast.LENGTH_SHORT).show()
-    }
     fun mostrarError(mensaje:String)
     {
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show()
