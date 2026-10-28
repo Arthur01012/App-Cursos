@@ -46,21 +46,12 @@ class RegistroActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_regitro)
-
         ViewCompat.setOnApplyWindowInsetsListener(
             findViewById(R.id.main),
             object : OnApplyWindowInsetsListener {
-                override fun onApplyWindowInsets(
-                    view: View,
-                    insets: WindowInsetsCompat
-                ): WindowInsetsCompat {
+                override fun onApplyWindowInsets(view: View, insets: WindowInsetsCompat): WindowInsetsCompat {
                     val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                    view.setPadding(
-                        systemBars.left,
-                        systemBars.top,
-                        systemBars.right,
-                        systemBars.bottom
-                    )
+                    view.setPadding(systemBars.left,systemBars.top,systemBars.right,systemBars.bottom)
                     return insets
                 }
             }
@@ -166,10 +157,6 @@ class RegistroActivity : AppCompatActivity() {
     }
 
     fun mostrarDatosAlumno(alumno: dataAlumno) {
-        if (alumno.matricula != etMatricula.text.toString().trim()) {
-            return
-        }
-
         matriculaConsultada = alumno.matricula
         correoAlumno = alumno.correo
         fechaRegistro = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())

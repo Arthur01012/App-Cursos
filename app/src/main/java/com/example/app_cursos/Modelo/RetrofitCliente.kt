@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlin.lazy
 object  RetrofitCliente {
-    private const val BASE_URL = "http://10.156.106.30/sistema_cursos/"
+    private const val BASE_URL = "http://10.156.106.107/sistema_cursos/"
     private val jsonConfig = Json{
         ignoreUnknownKeys=true
         coerceInputValues=true
