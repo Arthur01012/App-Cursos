@@ -1,10 +1,10 @@
-package com.example.app_cursos.presentador
+package com.example.app_cursos.Presentador
 
 import com.example.app_cursos.Vista.RegistroActivity
-import com.example.app_cursos.modelo.clsInscripcionModelo
-import com.example.app_cursos.modelo.dataAlumno
-import com.example.app_cursos.modelo.dataInscripcion
-import com.example.app_cursos.modelo.dataRespuestaInscripcion
+import com.example.app_cursos.Modelo.clsInscripcionModelo
+import com.example.app_cursos.Modelo.dataAlumno
+import com.example.app_cursos.Modelo.dataInscripcion
+import com.example.app_cursos.Modelo.dataRespuestaInscripcion
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call

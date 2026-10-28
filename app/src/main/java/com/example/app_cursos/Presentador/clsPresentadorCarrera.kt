@@ -3,9 +3,10 @@ package com.example.app_cursos.Presentador
 import com.example.app_cursos.Modelo.clsCursosModelo
 
 import com.example.app_cursos.Modelo.clsCarrerasModelo
+
+import com.example.app_cursos.Vista.MainActivity
 import com.example.app_cursos.Modelo.dataCarrera
 import com.example.app_cursos.Modelo.dataCursos
-import com.example.app_cursos.Vista.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

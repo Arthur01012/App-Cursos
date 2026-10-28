@@ -14,11 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app_cursos.Adaptador.CursosAdaptador
-import com.example.app_cursos.Modelo.dataCarrera
-import com.example.app_cursos.Modelo.dataCursos
+
 import com.example.app_cursos.Presentador.clsPresentadorCarrera
 import com.example.app_cursos.R
 import com.example.app_cursos.Vista.RegistroActivity
+import com.example.app_cursos.Modelo.dataCarrera
+import com.example.app_cursos.Modelo.dataCursos
 
 class MainActivity : AppCompatActivity() {
 
@@ -81,10 +82,6 @@ class MainActivity : AppCompatActivity() {
             .putExtra(RegistroActivity.EXTRA_TITULO_CURSO, curso.tituloCurso)
             .putExtra(RegistroActivity.EXTRA_RUTA_IMAGEN, curso.rutaImgGrid)
         startActivity(intent)
-    }
-    fun mostrarMensajeExito(id:Int, nombre:String)
-    {
-        Toast.makeText(this,"ID: " + id.toString() + " -Seleccionaste:"+nombre, Toast.LENGTH_SHORT).show()
     }
     fun mostrarError(mensaje:String)
     {
