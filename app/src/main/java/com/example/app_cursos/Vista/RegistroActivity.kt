@@ -139,20 +139,14 @@ class RegistroActivity : AppCompatActivity() {
     }
 
     private fun buscarDatos(actionId: Int): Boolean {
-        if (actionId != EditorInfo.IME_ACTION_GO) {
-            return false
-        }
-
         val matricula = etMatricula.text.toString().trim()
         if (matricula.isBlank()) {
             etMatricula.error = "Ingresa tu matrícula."
             etMatricula.requestFocus()
             return true
         }
-
         val teclado = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         teclado.hideSoftInputFromWindow(etMatricula.windowToken, 0)
-
         limpiarDatosAlumno()
         presenterInscripcion.buscarAlumno(matricula)
         return true
@@ -225,11 +219,6 @@ class RegistroActivity : AppCompatActivity() {
     }
 
     private fun enviarInscripcion() {
-        if (etMatricula.text.toString().trim() != matriculaConsultada) {
-            mostrarError("Consulta la matrícula con el botón GO antes de confirmar.")
-            return
-        }
-
         presenterInscripcion.inscribir(
             dataInscripcion(
                 codigoCurso = codigoCurso,
