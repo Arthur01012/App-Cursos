@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <ScrollView
+        android:id="@+id/contenido"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Imagen de fondo + botón BACK -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp">
+
+                <ImageView
+                    android:id="@+id/imgCursoDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="Imagen del curso"
+                    android:scaleType="centerCrop" />
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/tvTituloCurso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#111111"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCodigoCurso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#444444"
+                    android:textSize="16sp" />
+
+                <TextView
+                    style="@style/EtiquetaDetalle"
+                    android:text="DESCRIPCIÓN:" />
+
+                <TextView
+                    android:id="@+id/tvDescripcionCurso"
+                    style="@style/ValorDetalle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/EtiquetaDetalle"
+                    android:text="ESPACIO:" />
+
+                <TextView
+                    android:id="@+id/tvEspacioCurso"
+                    style="@style/ValorDetalle" />
+
+                <TextView
+                    style="@style/EtiquetaDetalle"
+                    android:text="TOTAL DE HORAS:" />
+
+                <TextView
+                    android:id="@+id/tvTotalHorasCurso"
+                    style="@style/ValorDetalle" />
+
+                <TextView
+                    style="@style/EtiquetaDetalle"
+                    android:text="DÍAS DE ATENCIÓN:" />
+
+                <TextView
+                    android:id="@+id/tvDiasCurso"
+                    style="@style/ValorDetalle" />
+
+                <TextView
+                    android:id="@+id/tvHorasCurso"
+                    style="@style/ValorDetalle" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

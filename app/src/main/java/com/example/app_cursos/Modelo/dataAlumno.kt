@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class dataAlumno(
-    @SerialName("matricula") val matricula: String,
-    @SerialName("correo") val correo: String
+    @SerialName("exito") val exito: Boolean=false,
+    @SerialName("mensaje")val mensaje: String ="",
+    @SerialName("matricula") val matricula: String = "",
+    @SerialName("correo") val correo: String = ""
 )

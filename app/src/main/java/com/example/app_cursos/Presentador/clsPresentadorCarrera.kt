@@ -1,9 +1,7 @@
 package com.example.app_cursos.Presentador
 
 import com.example.app_cursos.Modelo.clsCursosModelo
-
 import com.example.app_cursos.Modelo.clsCarrerasModelo
-
 import com.example.app_cursos.Vista.MainActivity
 import com.example.app_cursos.Modelo.dataCarrera
 import com.example.app_cursos.Modelo.dataCursos
@@ -12,18 +10,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class clsPresentadorCarrera(val vista: MainActivity)  {
-
     private val modelo = clsCarrerasModelo()
     private val modeloCursos = clsCursosModelo()
     private var listaCarreras: List<dataCarrera> = emptyList()
-
     fun iniciar()
     {
-        //Se usa un Scope simple para no bloquear la interfaz
         CoroutineScope(Dispatchers.Main).launch {
             try{
                 //Aqui se recibe el return directo del modelo
-                //1.Cargar la lisra de categorias en el spinner
+                //1.Cargar la lisra de carreras en el spinner
                 listaCarreras = modelo.obtenerCarreras()
                 vista.mostrarCarreras(listaCarreras)
 
@@ -43,9 +38,6 @@ class clsPresentadorCarrera(val vista: MainActivity)  {
             cargarCursos(carrera.idCarrera)
         }
     }
-    fun seleccionarCurso(curso: dataCursos) {
-        vista.abrirRegistroCurso(curso)
-    }
     private fun cargarCursos(idCarrera: Int) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
@@ -56,5 +48,10 @@ class clsPresentadorCarrera(val vista: MainActivity)  {
             }
         }
     }
-
+    fun mostrarvistadetalle(curso: dataCursos)
+    {
+        vista.abrirDetalleCurso(curso.codigoCurso,curso.tituloCurso,curso.descripcion,curso.espacio,
+            curso.totalHoras,curso.diasAtencion,curso.horasAtencion,curso.rutaImgGrid
+        )
+    }
 }

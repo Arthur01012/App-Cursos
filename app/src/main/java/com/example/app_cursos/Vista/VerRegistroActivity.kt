@@ -16,7 +16,6 @@ import com.example.app_cursos.Modelo.dataRegistro
 import com.example.app_cursos.Presentador.clsPresentadorRegistros
 import com.example.app_cursos.R
 import com.google.android.material.button.MaterialButton
-
 class VerRegistroActivity : AppCompatActivity() {
     private lateinit var presenter: clsPresentadorRegistros
     private lateinit var spinner: Spinner

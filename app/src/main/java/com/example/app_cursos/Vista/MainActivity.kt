@@ -17,13 +17,11 @@ import com.example.app_cursos.Adaptador.CursosAdaptador
 
 import com.example.app_cursos.Presentador.clsPresentadorCarrera
 import com.example.app_cursos.R
-import com.example.app_cursos.Vista.RegistroActivity
 import com.example.app_cursos.Modelo.dataCarrera
 import com.example.app_cursos.Modelo.dataCursos
 import com.google.android.material.button.MaterialButton
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var presenter: clsPresentadorCarrera
     private lateinit var spinner : Spinner
     private lateinit var recyclerCursos : RecyclerView
@@ -81,18 +79,36 @@ class MainActivity : AppCompatActivity() {
     fun mostrarCursos(cursos: List<dataCursos>) {
         adapterCursos.actualizarLista(cursos)
     }
-    fun seleccionarCurso(curso: dataCursos) {
-        presenter.seleccionarCurso(curso)
-    }
-    fun abrirRegistroCurso(curso: dataCursos) {
+    fun abrirInscripcionCurso(curso: dataCursos)
+    {
         val intent = Intent(this, RegistroActivity::class.java)
-            .putExtra(RegistroActivity.EXTRA_CODIGO_CURSO, curso.codigoCurso)
-            .putExtra(RegistroActivity.EXTRA_TITULO_CURSO, curso.tituloCurso)
-            .putExtra(RegistroActivity.EXTRA_RUTA_IMAGEN, curso.rutaImgGrid)
+        intent.putExtra("CODIGO_CURSO",curso.codigoCurso)
+        intent.putExtra("NOMBRE_CURSO",curso.tituloCurso)
+        intent.putExtra("URL_IMAGEN",curso.rutaImgGrid)
         startActivity(intent)
     }
     fun mostrarError(mensaje:String)
     {
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show()
     }
+
+    fun verdetalle(curso: dataCursos)
+    {
+        presenter.mostrarvistadetalle(curso)
+    }
+
+    fun abrirDetalleCurso(codigo: String, nombreCurso: String, descripcion:String, espacio: String, totalHoras:Int, diasAtencion: String, horasAtencion: String, urlImagen: String?)
+    {
+        val intent = Intent(this, DetalleCursoActivity::class.java)
+        intent.putExtra("CODIGO_CURSO", codigo)
+        intent.putExtra("NOMBRE_CURSO",nombreCurso)
+        intent.putExtra("ESPACIO",espacio)
+        intent.putExtra("DESCRIPCION",descripcion)
+        intent.putExtra("TOTAL_HORAS",totalHoras)
+        intent.putExtra("DIAS_ATENCION",diasAtencion)
+        intent.putExtra("HORAS_ATENCION",horasAtencion)
+        intent.putExtra("URL_IMAGEN",urlImagen)
+        startActivity(intent)
+    }
+
 }
